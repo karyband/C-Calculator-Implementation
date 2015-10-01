@@ -5,6 +5,8 @@
 #include "parser.h"
 
 int main (int argc, char *argv[]) {
+
+	printf("HI");
     FILE *fp;
     
     if (argc < 2) {
@@ -19,10 +21,11 @@ int main (int argc, char *argv[]) {
   
     initialize_reader(fp);
     
+    
     // Do scan, parse, evaluate here 
     parse();
     
-    finalize_reader();
+   // finalize_reader();
     
     exit(0);
 }

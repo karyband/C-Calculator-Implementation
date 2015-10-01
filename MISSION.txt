@@ -2,7 +2,7 @@
 
 PURPOSE
 
-In this assignment, you’ll be combining the theoretical FLAT work you’ve been doing in class and workshop with your knowledge of C programming gleaned from completing the previous two lab assignments. As this is your first 2-week programming assignment, you will also be asked to turn in a PDF writeup, which will be more formal than a simple README text file and contain diagrams, sources, and discussion as necessary. Learning how to create quality writeups will help you develop your technical writing skills and serve you well in future computer science courses. This is also the first assignment you will do which we have inherited from previous course iterations, so you will learn how to read legacy code, figure out what it does, and modify it to do something you want -- a crucial skill in industry!
+In this assignment, you’ll be combining the theoretical FLAT work you’ve been doing in class and workshop with your knowledge of C programming gleaned from completing the previous two lab assignments. As this is your first 2-week programming assignment, you will also whic be asked to turn in a PDF writeup,h will be more formal than a simple README text file and contain diagrams, sources, and discussion as necessary. Learning how to create quality writeups will help you develop your technical writing skills and serve you well in future computer science courses. This is also the first assignment you will do which we have inherited from previous course iterations, so you will learn how to read legacy code, figure out what it does, and modify it to do something you want -- a crucial skill in industry!
 
 BACKGROUND AND MISSION
 

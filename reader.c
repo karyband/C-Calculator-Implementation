@@ -18,7 +18,7 @@ static line_t head = {0, 0, 0};
  ********/
 void initialize_reader(FILE *fp)
 {
-    char s[MAX_LINE_LEN];
+    char s[MAX_LINE_LEN]; 
     line_t * tail = &head;
     while (1) {
         line_t * old_tail;
@@ -28,6 +28,7 @@ void initialize_reader(FILE *fp)
         tail->data = strdup(s);
         tail->line_num = old_tail->line_num + 1;
         tail->length = strlen(s);
+        
         if (tail->length == MAX_LINE_LEN-1 && tail->data[MAX_LINE_LEN]) {
             fprintf(stderr, "input line %d too long (%d max)\n",
                 tail->line_num, MAX_LINE_LEN);
@@ -35,12 +36,16 @@ void initialize_reader(FILE *fp)
         }
         tail->next = 0;
         old_tail->next = tail;
+        
+        
     }
+
 }
 
 void set_to_beginning(location_t *loc)
 {
     loc->line = head.next;
+	printf("%s",head.next->data);
     loc->column = 0;
 }
 

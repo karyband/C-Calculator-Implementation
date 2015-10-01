@@ -7,6 +7,8 @@
 
 #include "reader.h"
 
+
+
 typedef enum {
     T_EOF, T_SPACE, /* intra-line space (no newline characters) */
     T_NL_SPACE,     /* inter-line space (includes >= 1 newlines) */
@@ -26,6 +28,7 @@ typedef enum {
     T_IMPLEMENTS, T_IMPORT, T_PACKAGE, T_RETURN, T_SWITCH,
     T_SYNCHRONIZED, T_THROW, T_THROWS, T_TRY, T_WHILE
 } token_class;
+
 
 typedef struct {
     token_class tc;

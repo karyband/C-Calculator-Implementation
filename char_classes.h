@@ -79,6 +79,12 @@ extern const char_class char_classes[128];
     case LET_u:     \
     case LET_X:     \
     case LET_OTHER
+    
+#define CASE_ANY_DIGIT  \
+    case DIG_0:         \
+    case DIG_1to3:      \
+    case DIG_4to7:      \
+    case DIG_89
 
 #define CASE_NZ_DIGIT   \
     case DIG_1to3:      \
