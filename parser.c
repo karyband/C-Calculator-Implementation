@@ -56,6 +56,8 @@ static void put_token()
 static void get_token()
 {
 	scan(&loc,&tok);
+//	printf("\nToken:%u",tok.tc);
+//	printf("\n");
 }
 
 /********
@@ -83,6 +85,7 @@ static void match(token_class tc)
 void parse()
 {
     set_to_beginning(&loc);
+
 
     get_token();
 

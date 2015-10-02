@@ -29,8 +29,8 @@ static void print_location (token_t *tok)
  ********/
 void scan(location_t * loc, token_t * tok)
 {        
-	str theres_num; //going to be concatenating
-
+	char *theres_num=malloc(1); //going to be concatenating, start by allocating space for one num
+	int theres_num_size=0;
     enum {
             start,
             /*numbers*/
@@ -40,18 +40,6 @@ void scan(location_t * loc, token_t * tok)
             got_plus ,
             got_minus,
             /* increment or decrement */
-            got_incre,
-            got_decre,
-            /* all other chars that are valid:*,/,.,(,),tab,and new line*/
-            got_mult,
-            got_div,
-            got_mod,
-            got_rparen,
-            got_lparen,
-            got_space,
-            got_semi,
-            got_tab,
-            got_nl,
             /*any other char thats not valid*/
             got_other,
             done
@@ -60,6 +48,11 @@ void scan(location_t * loc, token_t * tok)
 /* Standard way to recognize a token: put back lookahead character that
     isn't part of current token: */
 #define ACCEPT_REUSE(t) \
+	if(t==T_NUM){ \
+    tok->int_value=(int)malloc(sizeof(int));  \
+    tok->int_value=atoi(theres_num);} \
+    if(t==T_DEC){ \
+    tok->float_value= atof(theres_num);} \
     *loc = loc_save;    \
     tok->length--;      \
     tok->tc = t;        \
@@ -70,18 +63,20 @@ void scan(location_t * loc, token_t * tok)
     lookahead: it's actually part of the token: */
 #define ACCEPT(t) \
     tok->tc = t;  \
+    if(t==T_NUM){ \
+    tok->int_value=(int)malloc(sizeof(int));  \
+    tok->int_value=atoi(theres_num);} \
     state = done;
 
 
     tok->location = *loc;
-    tok->length = 0;
+    tok->length = -1;
 
     while (state != done) {
         location_t loc_save = *loc;
 
         int c = get_character(loc);
         tok->length++;
-
 
                                
         switch (state) {
@@ -96,26 +91,26 @@ void scan(location_t * loc, token_t * tok)
                         break;
                     CASE_ANY_DIGIT:
                         state = got_int;
-                        printf("got 0");
-                        exit(1);
-                        break;
                         
+                        /*set first char of theres_num and increment the char array position count*/
+                        theres_num[theres_num_size++]=c; 
+                        //exit(1);
+                        /*make theres_num bigger by 1 in case the next input will add on to the digit*/
+                        theres_num=realloc(theres_num,theres_num_size+1); 
+                        break;          
                         
-                        /*
                     case PLUS:
                         state = got_plus;
                         break;
                     case MINUS:
                         state = got_minus;
                         break;
-                    case EQUALS:
-                        state = got_equals;
-                        break;
+
                     case STAR:
-                        state = got_star;
+                        ACCEPT(T_MULT);
                         break;
                     case PCT:
-                    	state = got_mod;
+                    	ACCEPT(T_MOD);
                     	break;
                     case LPAREN:
                         ACCEPT(T_LPAREN);
@@ -124,19 +119,74 @@ void scan(location_t * loc, token_t * tok)
                         ACCEPT(T_RPAREN);
                         break;
                     case SEMIC:
-                        ACCEPT(T_SEMIC);
+                        ACCEPT(T_SEMI);
                         break;
                     case SLASH:
-                        state = got_slash;
+                        ACCEPT(T_DIV);
                         break;
                     case END:
                         ACCEPT_REUSE(T_EOF);
                         break;
-                    case OTHER:
-                        /* This will be an error.  Eat as many bogus
-                            characters as possible. */
+                    default:
+                        ACCEPT(T_THROWS);//for error
+                        break;
 			}
+			
+				break;
+				
+			case got_int:
+                switch (char_classes[c]) {
+                	case DOT:
+                        state = got_dec;         
+                        theres_num[theres_num_size++]=c;                    
+                        break;
+                    CASE_ANY_DIGIT: //concatenate to the digit(s) scanned prior      
+                        theres_num[theres_num_size++]=c;                    
+                    	theres_num=realloc(theres_num,theres_num_size+1);
+                        break;
+                    default:
+                    	ACCEPT_REUSE(T_NUM);
+                    	break;
+                }
+                break;
+            
+            case got_dec:
+                switch (char_classes[c]) {
+                	CASE_ANY_DIGIT: //add on to the decimal number      
+                        theres_num[theres_num_size++]=c;                    
+                    	theres_num=realloc(theres_num,theres_num_size+1);
+                        break;
+                    default:
+                    	ACCEPT_REUSE(T_DEC);  
+                    	break;       	
+                }
+                break;
+                
+            case got_plus:
+                switch (char_classes[c]) {
+                	case PLUS: //its an increment      
+						ACCEPT(T_INCRE);
+                        break;
+                    default: 
+                    	ACCEPT_REUSE(T_PLUS);  //just a plus
+                    	break;       	
+                }
+                break;
+            
+            case got_minus:
+                switch (char_classes[c]) {
+                	case MINUS: //its an increment      
+						ACCEPT(T_DECRE);
+                        break;
+                    default: 
+                    	ACCEPT_REUSE(T_MINUS);  //just a plus
+                    	break;       	
+                }
+                break;
+        	
 		}
-        
+       
     }
 }
+
+

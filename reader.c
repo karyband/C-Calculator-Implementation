@@ -45,7 +45,6 @@ void initialize_reader(FILE *fp)
 void set_to_beginning(location_t *loc)
 {
     loc->line = head.next;
-	printf("%s",head.next->data);
     loc->column = 0;
 }
 
