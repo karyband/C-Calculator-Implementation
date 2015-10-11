@@ -49,6 +49,7 @@ void scan(location_t * loc, token_t * tok)
     isn't part of current token: */
 #define ACCEPT_REUSE(t) \
 	if(t==T_NUM){ \
+	tok->float_value= atof(theres_num);	\
     tok->int_value=(int)malloc(sizeof(int));  \
     tok->int_value=atoi(theres_num);} \
     if(t==T_DEC){ \

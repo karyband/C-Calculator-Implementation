@@ -17,10 +17,10 @@ void s();
 void all();
 
 void expr();
-void tmore();
-void term();
-void umore();
-void unit();
+float tmore(float x);
+float term();
+float umore(float x);
+float unit();
 void una();
 void op2();
 void op1();
