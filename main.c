@@ -6,7 +6,6 @@
 
 int main (int argc, char *argv[]) {
 
-	printf("HI");
     FILE *fp;
     
     if (argc < 2) {

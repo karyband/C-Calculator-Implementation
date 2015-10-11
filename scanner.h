@@ -14,6 +14,7 @@ typedef enum {
 	T_DEC,
 	T_INCRE,
 	T_DECRE,
+	T_NEG,
 	T_PLUS,
 	T_MINUS,
 	T_MULT,

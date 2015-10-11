@@ -93,8 +93,8 @@ void s(){
 		case T_DEC:
 		case T_PLUS:
 		case T_MINUS:
-			printf("\nToken:%u",tok.tc);
-			printf("S\n");
+			//printf("\nToken:%u",tok.tc);
+			//printf("S\n");
 			all();
 			break;
 		//if end of equation
@@ -103,6 +103,10 @@ void s(){
 			break;
 			
 		 //if it gets here then it is an invalid token for the calculator 
+		 case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);
@@ -124,12 +128,16 @@ void all(){
 		case T_DEC:
 		case T_PLUS:
 		case T_MINUS:
-		printf("\nToken:%u",tok.tc);
-			printf("All\n");
+		//printf("\nToken:%u",tok.tc);
+		//	printf("All\n");
 			expr();
 			all();
 			break;
 		//if it gets here then it is an invalid token for the calculator 
+		 case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);
@@ -139,6 +147,7 @@ void all(){
 
 float expr(){
 	float expr;
+	float term_float;
 	switch(tok.tc){
 		//end of equation,
 		case T_SEMI:
@@ -149,16 +158,21 @@ float expr(){
 		case T_DEC:
 		case T_PLUS:
 		case T_MINUS:
-		printf("\nToken:%u",tok.tc);
-		printf("expr\n");
+		//printf("\nToken:%u",tok.tc);
+		//printf("expr\n");
 			//get the value
-			float term_float=term();
+			term_float=term();
 			//sent it into tmore so that it can get evaluated with what comes next
+		//	printf("out");
 			expr=tmore(term_float);
-			printf("EXPRE NUM: %f",expr);
+			//printf("EXPRE NUM: %f",expr);
 			return expr;
 			break;
 		//if it gets here then it is an invalid token for the calculator 
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);
@@ -181,10 +195,16 @@ float term(){
 		case T_LPAREN:
 		case T_NUM:
 		case T_DEC:
-			temp=unit();		
+			temp=unit();
+					//printf("jknnknjknToken:%u",tok.tc);
 			temp=umore(temp);
+			//printf("out:%u",tok.tc);
 			break;
 		//if it gets here then it is an invalid token for the calculator 
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);
@@ -207,7 +227,9 @@ float tmore(float x){
 		case T_NUM:
 		case T_DEC:
 		case T_SEMI:
-			printf("here: %f",x);
+		case T_INCRE:
+		case T_DECRE:
+			//printf("here: %f",x);
 			return x;
 			break;
 		//TMORE_>OP2 TERM TMORE
@@ -217,7 +239,7 @@ float tmore(float x){
 			term_right=term();
 			//evaluate with what came before the operator 
 			tmore_float=x+term_right;
-			printf("after: %f", tmore_float);
+			//printf("after: %f", tmore_float);
 			tmore_float=tmore(tmore_float);
 			
 			break;
@@ -229,8 +251,12 @@ float tmore(float x){
 			tmore_float=x-term_right;
 			tmore_float=tmore(tmore_float);
 			break;
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
-			printf("tmore");
+			//printf("tmore");
     		parse_error();
     		exit(1);
     		break;
@@ -240,43 +266,79 @@ float tmore(float x){
 }
 
 float unit(){
-float temp;
+	float temp;
 
 	switch(tok.tc){
+	
 		//UNIT->NUM
 		case T_DEC:
 			//to keep track if it contains a decimal and no need to convert the final answer to an int
 			only_ints=0;
 		case T_NUM:
 			temp=tok.float_value;
-			/*************************************************************** return number */
-
-			get_token(); //move it to the next token
-
+			/* move it to the next token and return number */
+			get_token();
 			return(temp);
 			break;
+			
 		//UNIT->(UNA EXPR UNA) 
 		case T_LPAREN:
-			get_token(); //get the next token
-			int unary=una();
+			//get the next token
+			get_token(); 
+			//check if there is a prefix unary
+			int unary=una(); 
 			
 			temp=expr();
-			if(unary==2){//if there was a prefix ++, increment by one
+			
+			//if there was a prefix ++, increment by one
+			if(unary==2){
 				temp++;
 				}
-			printf("temp1 %f",temp);
-			una();
-			//if theres no closing parenthesis
+				
+			//if there was a prefix --, decrement by one
+			if(unary==1){
+				temp--;
+				//printf("KKKKK%f ",temp);
+				}
+			
+			//if there was a prefix -, make the value negative
+			if(unary==0){
+				temp=-temp;
+				}
+				
+			//check if there is a postfix unary 
+			int post=una(); 
+			//printf("POST %d",post);
+			
+			//if there was a postfix ++, increment by one since this is in a parenthesis
+			if(post==2){
+			
+				temp++;
+			//	printf("KKKKkl%f ",temp);
+				}
+				
+			//if there was a postfix --, decrement by one
+			if(post==1){
+				temp--;
+				}
+			
+			//if theres no closing parenthesis, then it is invalid
 			if(tok.tc!=T_RPAREN){
-			parse_error();
-    		exit(1);
-    		}
+				printf("Parenthesis do not match up");
+				parse_error();
+    			exit(1);
+    			}
+    		
     		get_token();
-    		printf("temp %f",temp);
+    		//printf("temp %f",temp);
     		return(temp);
     		break;
+    	case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
-			printf("unit");
+			//printf("unit");
     		parse_error();
     		exit(1);
 	}
@@ -291,7 +353,9 @@ float new;
 		case T_PLUS:
 		case T_MINUS:
 		case T_SEMI:
-		printf("Toijiken:%u",tok.tc);
+		case T_INCRE:
+		case T_DECRE:
+		//printf("Toijiken:%u",tok.tc);
 			return x;
 			break;
 		//UMORE->OP1 UNIT UMORE
@@ -300,8 +364,8 @@ float new;
 			tempmore=unit();
 			//multiply the right side of the * with what was on the left and brought over from within term (for order of operations)
 			new=x*tempmore;
-			printf("ANSWER %f",new);
-			printf("\nToken:%u",tok.tc);
+			//printf("ANSWER %f",new);
+			//printf("\nToken:%u",tok.tc);
 			new=umore(new);
 			break;
 		case T_DIV:
@@ -309,8 +373,8 @@ float new;
 			tempmore=unit();
 			//divid the right side of the / with what was on the left and brought over from within term
 			new=x/tempmore;
-			printf("ANSWER %f",new);
-			printf("\nToken:%u",tok.tc);
+			//printf("ANSWER %f",new);
+			//printf("\nToken:%u",tok.tc);
 			new=umore(new);
 			break;
 		case T_MOD:
@@ -327,12 +391,16 @@ float new;
 			//mod the right side of the % with what is on the left and brought over from within term
 			new_int=x_to_int%tempmore_int;
 			new=(float)new_int;
-			printf("ANSWER %d",new_int);
-			printf("\nToken:%u",tok.tc);
+			//printf("ANSWER %d",new_int);
+			//printf("\nToken:%u",tok.tc);
 			new=umore(new_int);
 			break;
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
-			printf("umore");
+			//printf("umore");
     		parse_error();
     		exit(1);
     		break;
@@ -343,7 +411,7 @@ float new;
 	
 }
 
-/*Returns a value for int to signify if there is a unary operator: 0 for none, 1 for decre, and 2 for incre*/
+/*Returns a value for int to signify if there is a unary operator: 0 for  neg, 1 for decre, and 2 for incre, 3 for none*/
 int una(){
 	switch(tok.tc){
 		//UNA->E
@@ -352,18 +420,32 @@ int una(){
 		case T_NUM:
 		case T_PLUS:
 		case T_MINUS:
+			return 3;
 			break;
-		//UNA->--
+		//UNA->(-)
+		case T_NEG:
+			get_token(); //move token to next
+			return 0;
+			break;
+		//UNA->(--)
 		case T_DECRE:
-		/*************************************************** decrement */
+			get_token(); //move token to next
+			return 1;
 			break;
-		//UNA->++
+		//UNA->(++)
 		case T_INCRE:
+			//printf("INCRE");
+			get_token(); //move token to next
 			return 2;
 			break;
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);
+    		break;
 	}
 	
 }
@@ -372,14 +454,18 @@ void op2(){
 	switch(tok.tc){
 		//OP2->-
 		case T_MINUS:
-			printf("minus");
+			//printf("minus");
 			get_token();
 			break;
 		//OP2->++
 		case T_PLUS:
-			printf("add");
+			//printf("add");
 			get_token();
 			break;
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);
@@ -390,18 +476,22 @@ void op1(){
 	switch(tok.tc){
 		//OP1->*
 		case T_MULT:
-			printf("mult");
+			//printf("mult");
 			get_token();
 			break;
 		//OP2->/
 		case T_DIV:
-			printf("div");
+			//printf("div");
 			get_token();
 			break;
 		case T_MOD:
-			printf("mod");
+			//printf("mod");
 			get_token();
 			break;
+		case T_THROWS: //T_THROWS was my enum for invalid token combinations
+		 	parse_error();
+		 	exit(1);
+		 	break;
 		default:
     		parse_error();
     		exit(1);

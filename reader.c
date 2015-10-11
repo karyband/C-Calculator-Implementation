@@ -50,6 +50,7 @@ void set_to_beginning(location_t *loc)
 
 int get_character(location_t *loc)
 {
+	
     int rtn;
     if (loc->column >= loc->line->length) {
         return 0;
