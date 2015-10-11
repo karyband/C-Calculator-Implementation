@@ -42,17 +42,9 @@ static void put_token()
     Get next token from the scanner.  Filter out white space, comments,
     and newlines.
 
-    Print comments appropriately:
-      - If comment is preceded by a newline in input, precede it with
-        newline in output.  If an old-style comment is followed by a
-        newline, add a newline to the output.  These are the ONLY places
-        where the formatter pays attention to white space in the input.
-      - if the comment is new style (// to eoln), follow with newline
-        (scanner does not include newline in comment).
-      - with both of the previous rules, if the parser also decides to
-        generate a newline (e.g. for a semicolon), combine them so we
-        don't generate an *extra* one.
  ********/
+ 
+ 
 static void get_token()
 {
 	scan(&loc,&tok);
@@ -85,9 +77,58 @@ static void match(token_class tc)
 void parse()
 {
     set_to_beginning(&loc);
-
-
     get_token();
+    s();
 
+
+}
+
+void s(){
+	//if the token is any of the tokens in the predict set of S->ALL; send to S
+	switch(tok.tc){
+		case T_LPAREN:
+		case T_NUM:
+		case T_DEC:
+		case T_PLUS:
+		case T_MINUS:
+			all();
+			break;
+		//if end of equation
+		case T_EOF:
+			break;
+			
+		 //if it gets here then it is an invalid token for the calculator 
+		default:
+    		parse_error();
+	}
+}
+
+
+void all(){
+	printf("\nToken:%u",tok.tc);
+}
+
+void expr(){
+}
+
+void tmore(){
+}
+
+void term(){
+}
+
+void umore(){
+}
+
+static void unit(){
+}
+
+static void una(){
+}
+
+static void op2(){
+}
+
+static void op1(){
 }
 

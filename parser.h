@@ -12,4 +12,12 @@
 void parse();
     /* Scan source, identify structure, and print appropriately. */
 
+void s();
+
+void all();
+
+void expr();
+void tmore();
+void term();
+void umore();
 #endif
