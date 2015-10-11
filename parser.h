@@ -16,12 +16,12 @@ void s();
 
 void all();
 
-void expr();
+float expr();
 float tmore(float x);
 float term();
 float umore(float x);
 float unit();
-void una();
+int una();
 void op2();
 void op1();
 

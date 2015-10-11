@@ -40,6 +40,11 @@ void scan(location_t * loc, token_t * tok)
             got_plus ,
             got_minus,
             /* increment or decrement */
+            //left parenthesis
+            got_paren; 
+            got_pos_una; //positive unary
+            got_neg_una; //negative unary
+            got_decre;//--
             /*any other char thats not valid*/
             got_other,
             done
@@ -101,10 +106,10 @@ void scan(location_t * loc, token_t * tok)
                         break;          
                         
                     case PLUS:
-                        state = got_plus;
+                        ACCEPT(T_PLUS);
                         break;
                     case MINUS:
-                        state = got_minus;
+                        ACCEPT(T_MINUS);
                         break;
 
                     case STAR:
@@ -114,7 +119,7 @@ void scan(location_t * loc, token_t * tok)
                     	ACCEPT(T_MOD);
                     	break;
                     case LPAREN:
-                        ACCEPT(T_LPAREN);
+                        state=got_paren;
                         break;
                     case RPAREN:
                         ACCEPT(T_RPAREN);
@@ -134,7 +139,23 @@ void scan(location_t * loc, token_t * tok)
 			}
 			
 				break;
-				
+			
+			case got_paren:
+                switch (char_classes[c]) {
+                	case PLUS:
+                		//its a positive unary 
+                        state = got_pos_una;                          
+                        break;
+                   case MINUS:
+                   		//its a negative unary
+                   		state = got_neg_una;
+                        break;
+                    default:
+                    	ACCEPT_REUSE(T_NUM);
+                    	break;
+                }
+                break;
+                
 			case got_int:
                 switch (char_classes[c]) {
                 	case DOT:

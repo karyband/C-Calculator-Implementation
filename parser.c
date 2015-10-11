@@ -99,6 +99,7 @@ void s(){
 			break;
 		//if end of equation
 		case T_SEMI:
+			printf("0\n");
 			break;
 			
 		 //if it gets here then it is an invalid token for the calculator 
@@ -136,7 +137,8 @@ void all(){
 	}
 }
 
-void expr(){
+float expr(){
+	float expr;
 	switch(tok.tc){
 		//end of equation,
 		case T_SEMI:
@@ -152,8 +154,9 @@ void expr(){
 			//get the value
 			float term_float=term();
 			//sent it into tmore so that it can get evaluated with what comes next
-			float expr=tmore(term_float);
+			expr=tmore(term_float);
 			printf("EXPRE NUM: %f",expr);
+			return expr;
 			break;
 		//if it gets here then it is an invalid token for the calculator 
 		default:
@@ -178,13 +181,14 @@ float term(){
 		case T_LPAREN:
 		case T_NUM:
 		case T_DEC:
-			temp=unit();			
+			temp=unit();		
 			temp=umore(temp);
 			break;
 		//if it gets here then it is an invalid token for the calculator 
 		default:
     		parse_error();
     		exit(1);
+    		break;
 	}
 	
 	
@@ -199,9 +203,11 @@ float tmore(float x){
 	switch(tok.tc){
 		//TMORE->E
 		case T_LPAREN:
+		case T_RPAREN:
 		case T_NUM:
 		case T_DEC:
 		case T_SEMI:
+			printf("here: %f",x);
 			return x;
 			break;
 		//TMORE_>OP2 TERM TMORE
@@ -211,7 +217,9 @@ float tmore(float x){
 			term_right=term();
 			//evaluate with what came before the operator 
 			tmore_float=x+term_right;
+			printf("after: %f", tmore_float);
 			tmore_float=tmore(tmore_float);
+			
 			break;
 		case T_MINUS:
 			op2();
@@ -242,20 +250,30 @@ float temp;
 		case T_NUM:
 			temp=tok.float_value;
 			/*************************************************************** return number */
+
 			get_token(); //move it to the next token
+
 			return(temp);
 			break;
 		//UNIT->(UNA EXPR UNA) 
 		case T_LPAREN:
 			get_token(); //get the next token
-			una();
-			expr();
+			int unary=una();
+			
+			temp=expr();
+			if(unary==2){//if there was a prefix ++, increment by one
+				temp++;
+				}
+			printf("temp1 %f",temp);
 			una();
 			//if theres no closing parenthesis
 			if(tok.tc!=T_RPAREN){
 			parse_error();
     		exit(1);
     		}
+    		get_token();
+    		printf("temp %f",temp);
+    		return(temp);
     		break;
 		default:
 			printf("unit");
@@ -269,9 +287,11 @@ float tempmore;
 float new;
 	switch(tok.tc){
 		//UMORE->E
+		case T_RPAREN:
 		case T_PLUS:
 		case T_MINUS:
 		case T_SEMI:
+		printf("Toijiken:%u",tok.tc);
 			return x;
 			break;
 		//UMORE->OP1 UNIT UMORE
@@ -315,6 +335,7 @@ float new;
 			printf("umore");
     		parse_error();
     		exit(1);
+    		break;
     		
 	}
 	
@@ -322,8 +343,8 @@ float new;
 	
 }
 
-
-void una(){
+/*Returns a value for int to signify if there is a unary operator: 0 for none, 1 for decre, and 2 for incre*/
+int una(){
 	switch(tok.tc){
 		//UNA->E
 		case T_LPAREN:
@@ -338,7 +359,7 @@ void una(){
 			break;
 		//UNA->++
 		case T_INCRE:
-		/*************************************************** increment */
+			return 2;
 			break;
 		default:
     		parse_error();
