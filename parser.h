@@ -20,4 +20,9 @@ void expr();
 void tmore();
 void term();
 void umore();
+void unit();
+void una();
+void op2();
+void op1();
+
 #endif
