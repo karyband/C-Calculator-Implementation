@@ -80,8 +80,11 @@ void parse()
 {
     set_to_beginning(&loc);
     get_token();
+    
+    while(tok.tc!=T_EOF){
     s();
-
+    get_token();
+}
 
 }
 
@@ -118,6 +121,7 @@ void s(){
 
 
 void all(){
+	float expr_float;
 	switch(tok.tc){
 		//end of equation, ALL->E (E for epsilon)
 		case T_SEMI:
@@ -130,7 +134,8 @@ void all(){
 		case T_MINUS:
 		//printf("\nToken:%u",tok.tc);
 		//	printf("All\n");
-			expr();
+			expr_float=expr();
+			printf("\n= %f \n\n",expr_float);
 			all();
 			break;
 		//if it gets here then it is an invalid token for the calculator 
@@ -165,7 +170,7 @@ float expr(){
 			//sent it into tmore so that it can get evaluated with what comes next
 		//	printf("out");
 			expr=tmore(term_float);
-			//printf("EXPRE NUM: %f",expr);
+
 			return expr;
 			break;
 		//if it gets here then it is an invalid token for the calculator 
@@ -195,8 +200,9 @@ float term(){
 		case T_LPAREN:
 		case T_NUM:
 		case T_DEC:
+			//una();
 			temp=unit();
-					//printf("jknnknjknToken:%u",tok.tc);
+					
 			temp=umore(temp);
 			//printf("out:%u",tok.tc);
 			break;

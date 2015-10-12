@@ -170,13 +170,15 @@ void scan(location_t * loc, token_t * tok)
             
             case got_pos_una:
                 switch (char_classes[c]) {
+                    case RPAREN:
+                   		//(+), just eat it up since it doesnt have an effect
+                   		printf("(+)");
+						//set the DFA back to start for the next token
+                   		state=start;
+                        break;
                 	case PLUS:
                 		//its a positive unary 
                         state = got_incre;                          
-                        break;
-                   case RPAREN:
-                   		//(+), just eat it up since it doesnt have an effect
-                   		ACCEPT(T_EOF);
                         break;
                     default:
                     	//anything else is invalid
@@ -258,7 +260,6 @@ void scan(location_t * loc, token_t * tok)
             case got_dec:
                 switch (char_classes[c]) {
                 	CASE_ANY_DIGIT: //add on to the decimal number
-                		printf("%c",c);
                         theres_num[theres_num_size++]=c;       
                         printf("%c",c);             
                     	theres_num=realloc(theres_num,theres_num_size+1);
