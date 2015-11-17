@@ -1,4 +1,6 @@
 /**********************************************************************
+  Karina Banda
+  
     Java parser and pretty-printer.
 
     Uses a recursive-descent parser that accepts a superset of the
@@ -200,11 +202,8 @@ float term(){
 		case T_LPAREN:
 		case T_NUM:
 		case T_DEC:
-			//una();
 			temp=unit();
-					
 			temp=umore(temp);
-			//printf("out:%u",tok.tc);
 			break;
 		//if it gets here then it is an invalid token for the calculator 
 		case T_THROWS: //T_THROWS was my enum for invalid token combinations
